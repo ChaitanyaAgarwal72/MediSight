@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediSight</title>
+</head>
+<body>
+    <h1>Welcome to MediSight</h1>
+    <p>Your AI Medical Assistant</p>
+    <a href="/about">About</a>
+    <br><br>
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <label for="img_file">Upload a medical image (Optional):</label>
+        <input type="file" id="img_file" name="img_file" accept="image/*">
+        <br>
+        <label for="report">Upload a medical report (Optional):</label>
+        <input type="file" id="report" name="report" accept=".pdf">
+        <br><br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
