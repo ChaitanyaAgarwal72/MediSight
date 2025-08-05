@@ -1,6 +1,12 @@
 from utils.faiss_handler import search_index
 from utils.embedding_utils import get_pdf_embedding
 import numpy as np
+import os
+from dotenv import load_dotenv
+import google.generativeai as genai
+
+load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 def answer_user_query(user_query: str, report_text: str, index, model, chunks: list, k: int = 5) -> str:
 
@@ -13,35 +19,56 @@ def answer_user_query(user_query: str, report_text: str, index, model, chunks: l
 
     if report_text:
 
-        prompt = f"""You are a helpful and kind AI medical assistant. 
-        Use the following medical report of the user and the external references to answer the user's question:
+        prompt = f"""You are a medically intelligent, empathetic AI assistant called MediSight.
 
-        1.Medical Report: 
-        {report_text}
+    Use the following medical report and external references to answer the user's question accurately, clearly, and kindly.
 
-        2.External References: 
-        {context}
+    Medical Report:
+    {report_text}
 
-        3.User's Question: 
-        {user_query}
+    External References (trusted sources):
+    {context}
 
-        Answer:
-        """
+    User's Question:
+    {user_query}
+
+    Instructions:
+    -------------
+    1. Explain abnormalities in the report (if any).
+    2. Use external references to support your explanation.
+    3. Structure your response clearly, using sections or bullet points.
+    4. Use emojis like ⚠️, ✅, 📌 to highlight key points.
+    5. Be kind, concise, and helpful.
+    6. Remind the user to consult a real doctor.
+
+    Now, write your answer:
+    """
 
     else:
 
-        prompt = f"""You are a helpful and kind AI medical assistant. 
-        Use the following external references to answer the user's question:
+        prompt = f"""You are a medically intelligent, empathetic AI assistant called MediSight.
 
-        1.External References: 
-        {context}
+    Use the external references to answer the user's medical question clearly and kindly.
 
-        2.User's Question: 
-        {user_query}
+    External References (trusted sources):
+    {context}
 
-        Answer:
-        """
+    User's Question:
+    {user_query}
 
-    response = "[Temp]"
+    Instructions:
+    -------------
+    1. Use trusted information to give a concise answer.
+    2. Structure your response clearly.
+    3. Use emojis like ⚠️, ✅, 📌 to highlight key points.
+    4. Be kind, concise, and helpful.
+    5. Remind the user to consult a real doctor.
+
+    Now, write your answer:
+    """
+
+
+    model = genai.GenerativeModel("gemini-2.0-flash")
+    response = model.generate_content(prompt)
     
-    return response
+    return response.text
