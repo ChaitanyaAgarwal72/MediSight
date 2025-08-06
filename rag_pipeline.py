@@ -8,7 +8,7 @@ import google.generativeai as genai
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-def answer_user_query(user_query: str, report_text: str, index, model, chunks: list, k: int = 5) -> str:
+def answer_user_query(user_query: str, report_text: str, index, model, chunks: list, conversation_history: list = None, k: int = 5) -> str:
 
     query_embedding = get_pdf_embedding(user_query)
 
@@ -17,56 +17,71 @@ def answer_user_query(user_query: str, report_text: str, index, model, chunks: l
 
     context = "\n\n".join(retrieved_chunks)
 
+    conversation_context = ""
+    if conversation_history and len(conversation_history) > 0:
+        recent_history = conversation_history[-6:] if len(conversation_history) > 6 else conversation_history
+        conversation_context = "\n".join(recent_history)
+
     if report_text:
 
         prompt = f"""You are a medically intelligent, empathetic AI assistant called MediSight.
 
-    Use the following medical report and external references to answer the user's question accurately, clearly, and kindly.
+            Use the following medical report, previous conversation context, and external references to answer the user's question accurately, clearly, and kindly.
 
-    Medical Report:
-    {report_text}
+            Medical Report:
+            {report_text}
 
-    External References (trusted sources):
-    {context}
+            Previous Conversation Context:
+            {conversation_context}
 
-    User's Question:
-    {user_query}
+            External References (trusted sources):
+            {context}
 
-    Instructions:
-    -------------
-    1. Explain abnormalities in the report (if any).
-    2. Use external references to support your explanation.
-    3. Structure your response clearly, using sections or bullet points.
-    4. Use emojis like ⚠️, ✅, 📌 to highlight key points.
-    5. Be kind, concise, and helpful.
-    6. Remind the user to consult a real doctor.
+            User's Current Question:
+            {user_query}
 
-    Now, write your answer:
-    """
+            Instructions:
+            -------------
+            1. Remember the previous conversation context when answering.
+            2. Explain abnormalities in the report (if any).
+            3. Use external references to support your explanation.
+            4. Structure your response clearly, using sections or bullet points.
+            5. Use emojis like ⚠️, ✅, 📌 to highlight key points.
+            6. Be kind, concise, and helpful.
+            7. Remind the user to consult a real doctor.
+            8. If the user is asking follow-up questions, refer back to previous parts of our conversation.
+            9. If the report is not related to medical conditions, inform the user that the report does not contain relevant medical information.
+
+            Now, write your answer:
+            """
 
     else:
 
         prompt = f"""You are a medically intelligent, empathetic AI assistant called MediSight.
 
-    Use the external references to answer the user's medical question clearly and kindly.
+            Use the previous conversation context and external references to answer the user's medical question clearly and kindly.
 
-    External References (trusted sources):
-    {context}
+            Previous Conversation Context:
+            {conversation_context}
 
-    User's Question:
-    {user_query}
+            External References (trusted sources):
+            {context}
 
-    Instructions:
-    -------------
-    1. Use trusted information to give a concise answer.
-    2. Structure your response clearly.
-    3. Use emojis like ⚠️, ✅, 📌 to highlight key points.
-    4. Be kind, concise, and helpful.
-    5. Remind the user to consult a real doctor.
+            User's Current Question:
+            {user_query}
 
-    Now, write your answer:
-    """
+            Instructions:
+            -------------
+            1. Remember the previous conversation context when answering.
+            2. Use trusted information to give a concise answer.
+            3. Structure your response clearly.
+            4. Use emojis like ⚠️, ✅, 📌 to highlight key points.
+            5. Be kind, concise, and helpful.
+            6. Remind the user to consult a real doctor.
+            7. If the user is asking follow-up questions, refer back to previous parts of our conversation.
 
+            Now, write your answer:
+            """
 
     model = genai.GenerativeModel("gemini-2.0-flash")
     response = model.generate_content(prompt)
