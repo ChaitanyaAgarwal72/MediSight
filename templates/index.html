@@ -5,461 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MediSight - AI Medical Assistant</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8fafc;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100%;
-            background: white;
-        }
-
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #2563eb, #1e40af);
-            color: white;
-            padding: 20px 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo i {
-            font-size: 28px;
-            color: #60a5fa;
-        }
-
-        .logo h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .header-subtitle {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-top: 2px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
-        }
-
-        /* Chat Container */
-        .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* Messages Area */
-        .messages-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background: #f8fafc;
-            position: relative;
-        }
-
-        .messages-area::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 20px;
-            background: linear-gradient(to bottom, rgba(248, 250, 252, 1), rgba(248, 250, 252, 0));
-            z-index: 1;
-        }
-
-        .welcome-message {
-            text-align: center;
-            padding: 60px 20px;
-            color: #64748b;
-        }
-
-        .welcome-message i {
-            font-size: 64px;
-            color: #2563eb;
-            margin-bottom: 20px;
-            opacity: 0.8;
-        }
-
-        .welcome-message h2 {
-            font-size: 28px;
-            color: #1e293b;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .welcome-message p {
-            font-size: 16px;
-            line-height: 1.6;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        /* Message Bubbles */
-        .message {
-            display: flex;
-            margin-bottom: 20px;
-            animation: fadeInUp 0.5s ease-out;
-        }
-
-        .message.user {
-            justify-content: flex-end;
-        }
-
-        .message.ai {
-            justify-content: flex-start;
-        }
-
-        .message-content {
-            max-width: 70%;
-            padding: 16px 20px;
-            border-radius: 20px;
-            position: relative;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .message.user .message-content {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white;
-            border-bottom-right-radius: 6px;
-        }
-
-        .message.ai .message-content {
-            background: white;
-            color: #1e293b;
-            border: 1px solid #e2e8f0;
-            border-bottom-left-radius: 6px;
-        }
-
-        /* Markdown content styling */
-        .message-content h1, .message-content h2, .message-content h3 {
-            margin: 10px 0 5px 0;
-            color: inherit;
-        }
-
-        .message-content p {
-            margin: 5px 0;
-            line-height: 1.5;
-        }
-
-        .message-content ul, .message-content ol {
-            margin: 5px 0;
-            padding-left: 20px;
-        }
-
-        .message-content li {
-            margin: 2px 0;
-        }
-
-        .message-content code {
-            background: #f1f5f9;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .message-content pre {
-            background: #f8fafc;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            margin: 5px 0;
-        }
-
-        .message-content strong {
-            font-weight: 600;
-        }
-
-        .message-content em {
-            font-style: italic;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 12px;
-            flex-shrink: 0;
-        }
-
-        .message.user .message-avatar {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            order: 2;
-        }
-
-        .message.ai .message-avatar {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-            color: white;
-        }
-
-        /* Input Area */
-        .input-area {
-            padding: 20px 30px;
-            background: white;
-            border-top: 1px solid #e2e8f0;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .file-upload-section {
-            margin-bottom: 15px;
-            padding: 15px;
-            background: #f1f5f9;
-            border-radius: 12px;
-            border: 2px dashed #cbd5e1;
-            transition: all 0.3s ease;
-        }
-
-        .file-upload-section:hover {
-            border-color: #2563eb;
-            background: #eff6ff;
-        }
-
-        .file-upload-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        .file-upload-label i {
-            color: #2563eb;
-        }
-
-        #report {
-            display: none;
-        }
-
-        .file-selected {
-            margin-top: 10px;
-            padding: 8px 12px;
-            background: #dbeafe;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #1e40af;
-            display: none;
-        }
-
-        .input-container {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-        }
-
-        #user_query {
-            flex: 1;
-            padding: 16px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
-            font-size: 16px;
-            font-family: inherit;
-            resize: none;
-            max-height: 120px;
-            min-height: 52px;
-            transition: all 0.3s ease;
-            background: #fafafa;
-        }
-
-        #user_query:focus {
-            outline: none;
-            border-color: #2563eb;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .send-button {
-            width: 52px;
-            height: 52px;
-            border: none;
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-        }
-
-        .send-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-        }
-
-        .send-button:active {
-            transform: translateY(0);
-        }
-
-        .send-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Typing Indicator */
-        .typing-indicator {
-            display: none;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 4px;
-            padding: 16px 20px;
-            background: white;
-            border-radius: 20px;
-            border-bottom-left-radius: 6px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: #cbd5e1;
-            border-radius: 50%;
-            animation: typing 1.4s infinite ease-in-out;
-        }
-
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes typing {
-            0%, 80%, 100% {
-                transform: scale(0.8);
-                opacity: 0.5;
-            }
-            40% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Scrollbar */
-        .messages-area::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .messages-area::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .messages-area::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-
-        .messages-area::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .app-container {
-                height: 100vh;
-                border-radius: 0;
-            }
-
-            .header {
-                padding: 15px 20px;
-            }
-
-            .logo h1 {
-                font-size: 20px;
-            }
-
-            .nav-links a {
-                padding: 6px 12px;
-                font-size: 14px;
-            }
-
-            .messages-area {
-                padding: 15px;
-            }
-
-            .message-content {
-                max-width: 85%;
-            }
-
-            .input-area {
-                padding: 15px 20px;
-            }
-
-            .welcome-message {
-                padding: 40px 20px;
-            }
-
-            .welcome-message i {
-                font-size: 48px;
-            }
-
-            .welcome-message h2 {
-                font-size: 24px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/static/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
 </head>
 <body>
+    <!-- Medical Disclaimer Modal -->
+    <div class="disclaimer-overlay" id="disclaimerOverlay">
+        <div class="disclaimer-modal">
+            <div class="disclaimer-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2 class="disclaimer-title">Important Medical Disclaimer</h2>
+            <div class="disclaimer-text">
+                <p><strong>Please read carefully before proceeding:</strong></p>
+                <ul>
+                    <li><strong>AI Assistant:</strong> MediSight is an artificial intelligence chatbot designed to provide general health information only.</li>
+                    <li><strong>Not Medical Advice:</strong> The information provided is not intended to replace professional medical advice, diagnosis, or treatment.</li>
+                    <li><strong>Consult Healthcare Professionals:</strong> Always seek the advice of qualified healthcare providers with any questions about medical conditions.</li>
+                    <li><strong>Emergency Situations:</strong> In case of medical emergencies, contact emergency services immediately.</li>
+                    <li><strong>No Liability:</strong> Use this tool at your own discretion and risk.</li>
+                </ul>
+                <p>By continuing, you acknowledge that you understand these limitations and agree to use MediSight responsibly.</p>
+            </div>
+            <div class="disclaimer-buttons">
+                <button class="disclaimer-btn secondary" onclick="closeApp()">I Disagree</button>
+                <button class="disclaimer-btn primary" onclick="acceptDisclaimer()">I Understand & Agree</button>
+            </div>
+        </div>
+    </div>
     <div class="app-container">
         <div class="header">
             <div class="logo">
@@ -505,6 +78,11 @@
                         </label>
                         <input type="file" id="report" name="report" accept=".pdf">
                         <div class="file-selected" id="file-selected"></div>
+                        <div class="report-status" id="report-status">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="report-status-text">Report uploaded and available for this conversation</span>
+                            <button type="button" class="clear-report" onclick="clearReport()">Clear</button>
+                        </div>
                     </div>
 
                     <div class="input-container">
@@ -532,6 +110,8 @@
         const typingIndicator = document.getElementById('typing-indicator');
         const fileInput = document.getElementById('report');
         const fileSelected = document.getElementById('file-selected');
+        const reportStatus = document.getElementById('report-status');
+        let reportUploaded = false;
 
         userQueryInput.addEventListener('input', function() {
             this.style.height = 'auto';
@@ -554,10 +134,12 @@
             const userQuery = formData.get('user_query').trim();
             
             if (!userQuery) return;
+            
             const welcomeMessage = document.querySelector('.welcome-message');
             if (welcomeMessage) {
                 welcomeMessage.style.display = 'none';
             }
+            
             addMessage(userQuery, 'user');
             userQueryInput.value = '';
             userQueryInput.style.height = 'auto';
@@ -565,9 +147,17 @@
             sendButton.disabled = true;
 
             try {
+                // Only include file if not already uploaded
+                const requestFormData = new FormData();
+                requestFormData.append('user_query', userQuery);
+                
+                if (fileInput.files.length > 0 && !reportUploaded) {
+                    requestFormData.append('report', fileInput.files[0]);
+                }
+
                 const response = await fetch('/chat', {
                     method: 'POST',
-                    body: formData
+                    body: requestFormData
                 });
                 
                 if (!response.ok) {
@@ -582,6 +172,22 @@
                     addMessage(`Error: ${result.error}`, 'ai');
                 } else if (result.answer) {
                     addMessage(result.answer, 'ai');
+                    
+                    // Show report status if a file was uploaded
+                    if (fileInput.files.length > 0 && !reportUploaded) {
+                        reportStatus.style.display = 'block';
+                        fileSelected.style.display = 'none';
+                        reportUploaded = true;
+                        
+                        // Update status text to show conversation continuity
+                        document.getElementById('report-status-text').textContent = 
+                            `Report uploaded and available for this conversation`;
+                    }
+                    
+                    // Add a small indicator that conversation is being maintained
+                    if (reportUploaded) {
+                        console.log('Report context maintained for question:', userQuery);
+                    }
                 } else {
                     addMessage('I received an empty response. Please try again.', 'ai');
                 }
@@ -591,8 +197,11 @@
                 addMessage('Sorry, I encountered an error while processing your request. Please try again.', 'ai');
             } finally {
                 sendButton.disabled = false;
-                fileInput.value = '';
-                fileSelected.style.display = 'none';
+                // Clear file input only if upload was successful or no file was selected
+                if (reportUploaded || fileInput.files.length === 0) {
+                    fileInput.value = '';
+                    fileSelected.style.display = 'none';
+                }
             }
         });
 
@@ -665,7 +274,85 @@
         });
 
         window.addEventListener('load', function() {
+            // Show disclaimer on page load
+            showDisclaimer();
+            
+            // Check if there's already a report in session
+            checkSessionStatus();
+        });
+
+        async function checkSessionStatus() {
+            try {
+                const response = await fetch('/session_status');
+                const status = await response.json();
+                
+                console.log('Session status:', status);
+                
+                if (status.has_report && status.report_filename) {
+                    reportStatus.style.display = 'block';
+                    document.getElementById('report-status-text').textContent = 
+                        `Report "${status.report_filename}" available for this conversation`;
+                    reportUploaded = true;
+                }
+            } catch (error) {
+                console.log('Could not check session status:', error);
+            }
+        }
+
+        async function clearReport() {
+            try {
+                const response = await fetch('/clear_session', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    reportStatus.style.display = 'none';
+                    reportUploaded = false;
+                    fileInput.value = '';
+                    fileSelected.style.display = 'none';
+                    addMessage('✓ Medical report has been cleared from this conversation.', 'ai');
+                }
+            } catch (error) {
+                console.error('Error clearing report:', error);
+            }
+        }
+
+        // Disclaimer functions
+        function showDisclaimer() {
+            const disclaimerOverlay = document.getElementById('disclaimerOverlay');
+            disclaimerOverlay.style.display = 'flex';
+        }
+
+        function acceptDisclaimer() {
+            const disclaimerOverlay = document.getElementById('disclaimerOverlay');
+            disclaimerOverlay.style.display = 'none';
             userQueryInput.focus();
+            
+            // Store acceptance in sessionStorage so it doesn't show again in same session
+            sessionStorage.setItem('disclaimerAccepted', 'true');
+        }
+
+        function closeApp() {
+            alert('Thank you for your understanding. Please consult with healthcare professionals for medical advice.');
+            window.close();
+            // If window.close() doesn't work (some browsers block it), redirect away
+            setTimeout(() => {
+                window.location.href = 'about:blank';
+            }, 1000);
+        }
+
+        // Check if disclaimer was already accepted in this session
+        window.addEventListener('load', function() {
+            const disclaimerAccepted = sessionStorage.getItem('disclaimerAccepted');
+            if (disclaimerAccepted === 'true') {
+                document.getElementById('disclaimerOverlay').style.display = 'none';
+            } else {
+                showDisclaimer();
+            }
+            
+            if (document.getElementById('disclaimerOverlay').style.display === 'none') {
+                userQueryInput.focus();
+            }
         });
     </script>
 </body>
