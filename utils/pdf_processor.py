@@ -1,6 +1,17 @@
 import fitz
 import os
 
+def extract_text_from_pdf_bytes(pdf_bytes):
+    text = ""
+    try:
+        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+        for page in doc:
+            text += page.get_text()
+        doc.close()
+    except Exception:
+        return None
+    return text.strip()
+
 def extract_text_from_pdf(pdf_path):
     text = ""
     with fitz.open(pdf_path) as doc:
