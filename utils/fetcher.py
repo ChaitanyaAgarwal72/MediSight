@@ -3,7 +3,7 @@ import requests
 def fetch_medical_data(query: str) -> list:
     url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
     params = {
-        query: query,
+        "query": query,
         "format": "json",
         "pageSize": 5
     }
