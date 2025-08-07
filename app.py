@@ -1,16 +1,12 @@
 import os
 from flask import Flask, render_template, request, session
-from werkzeug.utils import secure_filename
-from utils.embedding_utils import get_pdf_embedding
-from utils.pdf_processor import extract_text_from_pdf
+from utils.pdf_processor import extract_text_from_pdf_bytes
 from utils.faiss_handler import load_faiss_index
+from utils.fetcher import fetch_medical_data
 from rag_pipeline import answer_user_query
 from sentence_transformers import SentenceTransformer
 import pickle
-import markdown
 from flask import jsonify
-import io
-import tempfile
 import hashlib
 import time
 from dotenv import load_dotenv
@@ -38,18 +34,6 @@ def get_session_id():
         session.permanent = True
     return session['session_id']
 
-def extract_text_from_pdf_bytes(pdf_bytes):
-    import fitz
-    text = ""
-    try:
-        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
-        for page in doc:
-            text += page.get_text()
-        doc.close()
-    except Exception:
-        return None
-    return text.strip()
-
 @app.route("/", methods=["GET"])
 def home():
     return render_template("index.html")
@@ -61,9 +45,11 @@ def chat():
         user_query = request.form.get('user_query', '').strip()
         if not user_query:
             return jsonify({"error": "No query provided"}), 400
+        
         session_id = get_session_id()
         if session_id not in conversation_storage:
             conversation_storage[session_id] = []
+            
         extracted_text = report_storage.get(session_id, None)
         if uploaded_report and uploaded_report.filename != '':
             pdf_bytes = uploaded_report.read()
@@ -75,14 +61,18 @@ def chat():
                 extracted_text = new_extracted_text
             else:
                 return jsonify({"error": "Failed to extract text from PDF. Please ensure it's a valid PDF file."}), 400
+        
         conversation_storage[session_id].append(f"User: {user_query}")
         conversation_history = conversation_storage.get(session_id, [])
         response = answer_user_query(user_query, extracted_text, index, model, chunks, conversation_history)
         if response is None:
             response = "I apologize, but I couldn't generate a response. Please try again."
+        
         response = str(response).strip()
         conversation_storage[session_id].append(f"AI: {response}")
+        
         return jsonify({"answer": response})
+    
     except Exception as e:
         return jsonify({"error": f"Internal server error: {str(e)}"}), 500
 
@@ -91,11 +81,14 @@ def clear_session():
     session_id = get_session_id()
     if session_id in report_storage:
         del report_storage[session_id]
+    
     if session_id in conversation_storage:
         del conversation_storage[session_id]
+    
     session.pop('report_filename', None)
     return jsonify({"message": "Session cleared successfully"})
 
+# Endpoint to check session status for Debugging
 @app.route("/session_status", methods=["GET"])
 def session_status():
     session_id = get_session_id()
@@ -107,9 +100,20 @@ def session_status():
         "active_sessions": len(report_storage)
     })
 
-@app.route("/articles")
-def show_articles():
-    return "<h1>Articles Page</h1>"
+@app.route("/search_articles", methods=["POST"])
+def search_articles():
+    try:
+        data = request.get_json()
+        user_query = data.get("query", "").strip()
+        
+        if not user_query:
+            return jsonify({"error": "No query provided"}), 400
+        
+        articles = fetch_medical_data(user_query)
+        return jsonify(articles)
+    
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch articles: {str(e)}"}), 500
 
 @app.route("/about")
 def about():
