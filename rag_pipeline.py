@@ -1,6 +1,5 @@
 from utils.faiss_handler import search_index
 from utils.embedding_utils import get_pdf_embedding
-import numpy as np
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
