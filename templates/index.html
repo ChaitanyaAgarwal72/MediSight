@@ -43,12 +43,12 @@
                 </div>
             </div>
             <div class="nav-links">
-                <a href="/about"><i class="fas fa-info-circle"></i> About</a>
-                <a href="/articles"><i class="fas fa-newspaper"></i> Articles</a>
+                <a href="#" onclick="toggleArticlesPanel()" id="articlesToggle"><i class="fas fa-newspaper"></i> Articles</a>
             </div>
         </div>
 
-        <div class="chat-container">
+        <div class="main-content">
+            <div class="chat-container" id="chatContainer">
             <div class="messages-area" id="messages-area">
                 <div class="welcome-message">
                     <i class="fas fa-user-md"></i>
@@ -100,6 +100,39 @@
                 </form>
             </div>
         </div>
+
+        <!-- Articles Panel -->
+        <div class="articles-panel" id="articlesPanel">
+            <div class="articles-header">
+                <h2><i class="fas fa-newspaper"></i> Medical Articles</h2>
+                <button class="close-articles" onclick="toggleArticlesPanel()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="articles-search">
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="articleSearchInput" 
+                        placeholder="Search for medical articles..."
+                        onkeypress="handleArticleSearch(event)"
+                    >
+                    <button onclick="searchArticles()" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="articles-results" id="articlesResults">
+                <div class="search-placeholder">
+                    <i class="fas fa-search"></i>
+                    <p>Enter a medical topic to search for research articles</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
     </div>
 
     <script>
@@ -147,7 +180,6 @@
             sendButton.disabled = true;
 
             try {
-                // Only include file if not already uploaded
                 const requestFormData = new FormData();
                 requestFormData.append('user_query', userQuery);
                 
@@ -172,19 +204,16 @@
                     addMessage(`Error: ${result.error}`, 'ai');
                 } else if (result.answer) {
                     addMessage(result.answer, 'ai');
-                    
-                    // Show report status if a file was uploaded
+
                     if (fileInput.files.length > 0 && !reportUploaded) {
                         reportStatus.style.display = 'block';
                         fileSelected.style.display = 'none';
                         reportUploaded = true;
-                        
-                        // Update status text to show conversation continuity
+
                         document.getElementById('report-status-text').textContent = 
                             `Report uploaded and available for this conversation`;
                     }
-                    
-                    // Add a small indicator that conversation is being maintained
+
                     if (reportUploaded) {
                         console.log('Report context maintained for question:', userQuery);
                     }
@@ -197,7 +226,7 @@
                 addMessage('Sorry, I encountered an error while processing your request. Please try again.', 'ai');
             } finally {
                 sendButton.disabled = false;
-                // Clear file input only if upload was successful or no file was selected
+
                 if (reportUploaded || fileInput.files.length === 0) {
                     fileInput.value = '';
                     fileSelected.style.display = 'none';
@@ -274,30 +303,8 @@
         });
 
         window.addEventListener('load', function() {
-            // Show disclaimer on page load
             showDisclaimer();
-            
-            // Check if there's already a report in session
-            checkSessionStatus();
         });
-
-        async function checkSessionStatus() {
-            try {
-                const response = await fetch('/session_status');
-                const status = await response.json();
-                
-                console.log('Session status:', status);
-                
-                if (status.has_report && status.report_filename) {
-                    reportStatus.style.display = 'block';
-                    document.getElementById('report-status-text').textContent = 
-                        `Report "${status.report_filename}" available for this conversation`;
-                    reportUploaded = true;
-                }
-            } catch (error) {
-                console.log('Could not check session status:', error);
-            }
-        }
 
         async function clearReport() {
             try {
@@ -317,7 +324,6 @@
             }
         }
 
-        // Disclaimer functions
         function showDisclaimer() {
             const disclaimerOverlay = document.getElementById('disclaimerOverlay');
             disclaimerOverlay.style.display = 'flex';
@@ -327,21 +333,16 @@
             const disclaimerOverlay = document.getElementById('disclaimerOverlay');
             disclaimerOverlay.style.display = 'none';
             userQueryInput.focus();
-            
-            // Store acceptance in sessionStorage so it doesn't show again in same session
             sessionStorage.setItem('disclaimerAccepted', 'true');
         }
 
         function closeApp() {
             alert('Thank you for your understanding. Please consult with healthcare professionals for medical advice.');
             window.close();
-            // If window.close() doesn't work (some browsers block it), redirect away
             setTimeout(() => {
                 window.location.href = 'about:blank';
             }, 1000);
         }
-
-        // Check if disclaimer was already accepted in this session
         window.addEventListener('load', function() {
             const disclaimerAccepted = sessionStorage.getItem('disclaimerAccepted');
             if (disclaimerAccepted === 'true') {
@@ -354,6 +355,112 @@
                 userQueryInput.focus();
             }
         });
+
+        function toggleArticlesPanel() {
+            const articlesPanel = document.getElementById('articlesPanel');
+            const chatContainer = document.getElementById('chatContainer');
+            const isOpen = articlesPanel.classList.contains('open');
+
+            if (isOpen) {
+                articlesPanel.classList.remove('open');
+                chatContainer.classList.remove('compressed');
+            } else {
+                articlesPanel.classList.add('open');
+                chatContainer.classList.add('compressed');
+            }
+        }
+
+        function handleArticleSearch(event) {
+            if (event.key === 'Enter') {
+                searchArticles();
+            }
+        }
+
+        async function searchArticles() {
+            const query = document.getElementById('articleSearchInput').value.trim();
+            const resultsContainer = document.getElementById('articlesResults');
+            
+            if (!query) {
+                resultsContainer.innerHTML = `
+                    <div class="search-placeholder">
+                        <i class="fas fa-search"></i>
+                        <p>Enter a medical topic to search for research articles</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsContainer.innerHTML = `
+                <div class="loading-articles">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Searching for articles...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/search_articles', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const articles = await response.json();
+                displayArticles(articles);
+
+            } catch (error) {
+                console.error('Error searching articles:', error);
+                resultsContainer.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error searching for articles. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayArticles(articles) {
+            const resultsContainer = document.getElementById('articlesResults');
+            
+            if (!articles || articles.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-file-alt"></i>
+                        <p>No articles found for this search term.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const articlesHTML = articles.map(article => `
+                <div class="article-card" onclick="openArticle('${article.link}')">
+                    <div class="article-content">
+                        <h3 class="article-title">${article.title}</h3>
+                        <div class="article-meta">
+                            <span class="article-year">
+                                <i class="fas fa-calendar"></i> ${article.pubYear}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="article-arrow">
+                        <i class="fas fa-external-link-alt"></i>
+                    </div>
+                </div>
+            `).join('');
+
+            resultsContainer.innerHTML = articlesHTML;
+        }
+
+        function openArticle(link) {
+            if (link && link !== "No link available") {
+                window.open(link, '_blank');
+            }
+        }
     </script>
 </body>
 </html>
