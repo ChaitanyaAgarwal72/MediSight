@@ -16,7 +16,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
 </head>
 <body>
-    <!-- Medical Disclaimer Modal -->
     <div class="disclaimer-overlay" id="disclaimerOverlay">
         <div class="disclaimer-modal">
             <div class="disclaimer-icon">
@@ -225,7 +224,6 @@
                         <h3>Risk Analysis Results</h3>
                     </div>
                     <div class="result-content" id="resultContent">
-                        <!-- Results will be displayed here -->
                     </div>
                 </div>
             </div>
@@ -466,8 +464,7 @@
             } else {
                 articlesPanel.classList.add('open');
                 chatContainer.classList.add('compressed');
-                
-                // Close risk analysis panel if open
+
                 const riskPanel = document.getElementById('riskAnalysisPanel');
                 if (riskPanel.classList.contains('open')) {
                     riskPanel.classList.remove('open');
@@ -567,7 +564,6 @@
             }
         }
 
-        // Risk Analysis Functions
         function toggleRiskAnalysisPanel() {
             const riskPanel = document.getElementById('riskAnalysisPanel');
             const chatContainer = document.getElementById('chatContainer');
@@ -579,8 +575,7 @@
             } else {
                 riskPanel.classList.add('open');
                 chatContainer.classList.add('compressed');
-                
-                // Close articles panel if open
+
                 const articlesPanel = document.getElementById('articlesPanel');
                 if (articlesPanel.classList.contains('open')) {
                     articlesPanel.classList.remove('open');
@@ -588,7 +583,6 @@
             }
         }
 
-        // Handle risk analysis form submission
         document.getElementById('riskAnalysisForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -669,8 +663,6 @@
                         </div>
                     </div>
                 `;
-                
-                // Store the current risk analysis data for lifestyle suggestions
                 window.currentRiskData = {
                     formData: getCurrentFormData(),
                     prediction: result.result
@@ -699,10 +691,10 @@
 
         function getChestPainText(value) {
             const chestPainTypes = {
-                '0': 'Typical Angina',
-                '1': 'Atypical Angina', 
-                '2': 'Non-Anginal Pain',
-                '3': 'Asymptomatic'
+                '1': 'Typical Angina',
+                '2': 'Atypical Angina', 
+                '3': 'Non-Anginal Pain',
+                '4': 'Asymptomatic'
             };
             return chestPainTypes[value] || 'Unknown';
         }
@@ -719,12 +711,9 @@
             lifestyleBtn.disabled = true;
 
             try {
-                // Close the risk analysis panel
                 toggleRiskAnalysisPanel();
 
                 const { formData, prediction } = window.currentRiskData;
-                
-                // Send to the specialized lifestyle suggestions endpoint
                 const response = await fetch('/lifestyle_suggestions', {
                     method: 'POST',
                     headers: {

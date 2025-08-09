@@ -144,37 +144,37 @@ def get_lifestyle_suggestions():
             conversation_storage[session_id] = []
 
         lifestyle_prompt = f"""
-As a medical AI assistant, provide comprehensive lifestyle recommendations for cardiovascular health.
+            As a medical AI assistant, provide comprehensive lifestyle recommendations for cardiovascular health.
 
-PATIENT RISK ASSESSMENT: {risk_level}
+            PATIENT RISK ASSESSMENT: {risk_level}
 
-PATIENT PROFILE:
-Age: {user_data.get('age', 'N/A')} years
-Sex: {user_data.get('sex', 'N/A')}
-Chest Pain Type: {user_data.get('chestPainType', 'N/A')}
-Blood Pressure: {user_data.get('bloodPressure', 'N/A')} mmHg
-Cholesterol Level: {user_data.get('cholesterol', 'N/A')} mg/dl
-Fasting Blood Sugar: {user_data.get('fastingBloodSugar', 'N/A')}
-Maximum Heart Rate: {user_data.get('maxHeartRate', 'N/A')} bpm
-Exercise Induced Angina: {user_data.get('exerciseAngina', 'N/A')}
+            PATIENT PROFILE:
+            Age: {user_data.get('age', 'N/A')} years
+            Sex: {user_data.get('sex', 'N/A')}
+            Chest Pain Type: {user_data.get('chestPainType', 'N/A')}
+            Blood Pressure: {user_data.get('bloodPressure', 'N/A')} mmHg
+            Cholesterol Level: {user_data.get('cholesterol', 'N/A')} mg/dl
+            Fasting Blood Sugar: {user_data.get('fastingBloodSugar', 'N/A')}
+            Maximum Heart Rate: {user_data.get('maxHeartRate', 'N/A')} bpm
+            Exercise Induced Angina: {user_data.get('exerciseAngina', 'N/A')}
 
-Please provide lifestyle recommendations in these areas:
-1. DIET AND NUTRITION
-2. PHYSICAL ACTIVITY AND EXERCISE
-3. RISK FACTOR MANAGEMENT
-4. LIFESTYLE MODIFICATIONS  
-5. MONITORING AND FOLLOW-UP
+            Please provide lifestyle recommendations in these areas:
+            1. DIET AND NUTRITION
+            2. PHYSICAL ACTIVITY AND EXERCISE
+            3. RISK FACTOR MANAGEMENT
+            4. LIFESTYLE MODIFICATIONS  
+            5. MONITORING AND FOLLOW-UP
 
-IMPORTANT FORMATTING INSTRUCTIONS:
-- Write in plain text format only
-- Do NOT use markdown symbols like **, ###, -, or checkboxes
-- Do NOT use emojis or special symbols
-- Use simple line breaks and indentation
-- Write as if speaking directly to the patient
-- Keep recommendations clear and actionable
+            IMPORTANT FORMATTING INSTRUCTIONS:
+            - Write in plain text format only
+            - Do NOT use markdown symbols like **, ###, -, or checkboxes
+            - Do NOT use emojis or special symbols
+            - Use simple line breaks and indentation
+            - Write as if speaking directly to the patient
+            - Keep recommendations clear and actionable
 
-Provide specific advice tailored to this patient's risk level and health parameters. Base recommendations on current medical guidelines and emphasize consulting healthcare providers.
-"""
+            Provide specific advice tailored to this patient's risk level and health parameters. Base recommendations on current medical guidelines and emphasize consulting healthcare providers.
+            """
 
         conversation_storage[session_id].append(f"User: Lifestyle suggestions request")
         conversation_history = conversation_storage.get(session_id, [])
@@ -185,26 +185,12 @@ Provide specific advice tailored to this patient's risk level and health paramet
             response = "I apologize, but I couldn't generate lifestyle recommendations at this time. Please consult with your healthcare provider for personalized advice."
         
         response = str(response).strip()
-        
-        # Clean up markdown formatting that might still appear
-        import re
-        
-        # Remove markdown headers (###, ##, #)
+        import re        
         response = re.sub(r'^#{1,6}\s*', '', response, flags=re.MULTILINE)
-        
-        # Remove bold markdown (**text**)
         response = re.sub(r'\*\*(.*?)\*\*', r'\1', response)
-        
-        # Remove italic markdown (*text*)
         response = re.sub(r'\*(.*?)\*', r'\1', response)
-        
-        # Remove checkbox symbols and emojis commonly used
         response = re.sub(r'[✅❌📋💡🏃‍♂️🍎⚕️🧘📊]', '', response)
-        
-        # Clean up any remaining markdown list formatting
         response = re.sub(r'^[-*+]\s*', '• ', response, flags=re.MULTILINE)
-        
-        # Remove extra whitespace
         response = re.sub(r'\n\s*\n\s*\n', '\n\n', response)
         response = response.strip()
         
