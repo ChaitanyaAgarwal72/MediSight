@@ -202,6 +202,7 @@ def get_lifestyle_suggestions():
         return jsonify({"error": "Failed to generate lifestyle suggestions. Please try again."}), 500
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    # Bind to all interfaces and use the platform-provided PORT (defaults to 8080)
+    port = int(os.environ.get("PORT", 8080))
     debug = os.environ.get("FLASK_ENV") != "production"
-    app.run(port=port, debug=debug)
+    app.run(host="0.0.0.0", port=port, debug=debug)
