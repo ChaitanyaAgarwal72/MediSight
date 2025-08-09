@@ -3,4 +3,10 @@ __pycache__
 static/uploads/reports/*
 data/*
 .env
-vector_db/*
+
+# Include essential model and vector files
+!ml_model/
+!vector_db/
+!ml_model/*.pkl
+!vector_db/*.pkl
+!vector_db/*.index
