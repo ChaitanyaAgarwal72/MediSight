@@ -51,6 +51,7 @@
             </div>
             <div class="nav-links">
                 <a href="#" onclick="toggleArticlesPanel()" id="articlesToggle"><i class="fas fa-newspaper"></i> Articles</a>
+                <a href="#" onclick="toggleRiskAnalysisPanel()" id="riskAnalysisToggle"><i class="fas fa-heartbeat"></i> Heart Risk Analysis</a>
             </div>
         </div>
 
@@ -135,6 +136,97 @@
                 <div class="search-placeholder">
                     <i class="fas fa-search"></i>
                     <p>Enter a medical topic to search for research articles</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Heart Risk Analysis Panel -->
+        <div class="risk-analysis-panel" id="riskAnalysisPanel">
+            <div class="risk-analysis-header">
+                <h2><i class="fas fa-heartbeat"></i> Heart Risk Analysis</h2>
+                <button class="close-risk-analysis" onclick="toggleRiskAnalysisPanel()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="risk-analysis-content">
+                <div class="risk-disclaimer">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p><strong>Disclaimer:</strong> This is a predictive tool for educational purposes only. Always consult with healthcare professionals for medical advice.</p>
+                </div>
+                
+                <form id="riskAnalysisForm" class="risk-form">
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" min="1" max="120" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sex">Sex:</label>
+                        <select id="sex" name="sex" required>
+                            <option value="">Select</option>
+                            <option value="1">Male</option>
+                            <option value="0">Female</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="chestPain">Chest Pain Type:</label>
+                        <select id="chestPain" name="chestPain" required>
+                            <option value="">Select</option>
+                            <option value="1">Typical Angina</option>
+                            <option value="2">Atypical Angina</option>
+                            <option value="3">Non-Anginal Pain</option>
+                            <option value="4">Asymptomatic</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bp">Blood Pressure (mmHg):</label>
+                        <input type="number" id="bp" name="bp" min="50" max="300" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cholesterol">Cholesterol (mg/dl):</label>
+                        <input type="number" id="cholesterol" name="cholesterol" min="50" max="600" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fbs">Fasting Blood Sugar > 120 mg/dl:</label>
+                        <select id="fbs" name="fbs" required>
+                            <option value="">Select</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="maxHR">Maximum Heart Rate:</label>
+                        <input type="number" id="maxHR" name="maxHR" min="60" max="220" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exerciseAngina">Exercise Induced Angina:</label>
+                        <select id="exerciseAngina" name="exerciseAngina" required>
+                            <option value="">Select</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="predict-btn">
+                        <i class="fas fa-chart-line"></i> Get Risk Analysis
+                    </button>
+                </form>
+                
+                <div class="risk-results" id="riskResults" style="display: none;">
+                    <div class="result-header">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Risk Analysis Results</h3>
+                    </div>
+                    <div class="result-content" id="resultContent">
+                        <!-- Results will be displayed here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -374,6 +466,12 @@
             } else {
                 articlesPanel.classList.add('open');
                 chatContainer.classList.add('compressed');
+                
+                // Close risk analysis panel if open
+                const riskPanel = document.getElementById('riskAnalysisPanel');
+                if (riskPanel.classList.contains('open')) {
+                    riskPanel.classList.remove('open');
+                }
             }
         }
 
@@ -466,6 +564,201 @@
         function openArticle(link) {
             if (link && link !== "No link available") {
                 window.open(link, '_blank');
+            }
+        }
+
+        // Risk Analysis Functions
+        function toggleRiskAnalysisPanel() {
+            const riskPanel = document.getElementById('riskAnalysisPanel');
+            const chatContainer = document.getElementById('chatContainer');
+            const isOpen = riskPanel.classList.contains('open');
+
+            if (isOpen) {
+                riskPanel.classList.remove('open');
+                chatContainer.classList.remove('compressed');
+            } else {
+                riskPanel.classList.add('open');
+                chatContainer.classList.add('compressed');
+                
+                // Close articles panel if open
+                const articlesPanel = document.getElementById('articlesPanel');
+                if (articlesPanel.classList.contains('open')) {
+                    articlesPanel.classList.remove('open');
+                }
+            }
+        }
+
+        // Handle risk analysis form submission
+        document.getElementById('riskAnalysisForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const riskData = {
+                'Age': parseInt(formData.get('age')),
+                'Sex': parseInt(formData.get('sex')),
+                'Chest pain type': parseInt(formData.get('chestPain')),
+                'BP': parseInt(formData.get('bp')),
+                'Cholesterol': parseInt(formData.get('cholesterol')),
+                'FBS over 120': parseInt(formData.get('fbs')),
+                'Max HR': parseInt(formData.get('maxHR')),
+                'Exercise angina': parseInt(formData.get('exerciseAngina'))
+            };
+
+            const submitBtn = this.querySelector('.predict-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(riskData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                displayRiskResults(result);
+
+            } catch (error) {
+                console.error('Error predicting risk:', error);
+                displayRiskResults({
+                    error: 'Failed to analyze risk. Please check your input and try again.'
+                });
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        function displayRiskResults(result) {
+            const resultsContainer = document.getElementById('riskResults');
+            const resultContent = document.getElementById('resultContent');
+            
+            if (result.error) {
+                resultContent.innerHTML = `
+                    <div class="result-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>${result.error}</p>
+                    </div>
+                `;
+            } else {
+                const riskLevel = result.result.includes('High') ? 'high' : 'low';
+                const riskIcon = riskLevel === 'high' ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle';
+                const riskColor = riskLevel === 'high' ? '#e74c3c' : '#27ae60';
+                
+                resultContent.innerHTML = `
+                    <div class="result-card" style="border-left: 4px solid ${riskColor};">
+                        <div class="result-risk-level">
+                            <i class="${riskIcon}" style="color: ${riskColor};"></i>
+                            <span style="color: ${riskColor}; font-weight: bold;">${result.result}</span>
+                        </div>
+                        <div class="result-disclaimer">
+                            <i class="fas fa-info-circle"></i>
+                            <p><strong>Important:</strong> This is a predictive model for educational purposes. Always consult healthcare professionals for proper medical evaluation and advice.</p>
+                        </div>
+                        <div class="lifestyle-suggestions-section">
+                            <button class="lifestyle-btn" onclick="getLifestyleSuggestions()">
+                                <i class="fas fa-lightbulb"></i> Get Lifestyle Suggestions
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Store the current risk analysis data for lifestyle suggestions
+                window.currentRiskData = {
+                    formData: getCurrentFormData(),
+                    prediction: result.result
+                };
+            }
+            
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getCurrentFormData() {
+            const form = document.getElementById('riskAnalysisForm');
+            const formData = new FormData(form);
+            
+            return {
+                age: formData.get('age'),
+                sex: formData.get('sex') === '1' ? 'Male' : 'Female',
+                chestPainType: getChestPainText(formData.get('chestPain')),
+                bloodPressure: formData.get('bp'),
+                cholesterol: formData.get('cholesterol'),
+                fastingBloodSugar: formData.get('fbs') === '1' ? 'Yes (>120 mg/dl)' : 'No (≤120 mg/dl)',
+                maxHeartRate: formData.get('maxHR'),
+                exerciseAngina: formData.get('exerciseAngina') === '1' ? 'Yes' : 'No'
+            };
+        }
+
+        function getChestPainText(value) {
+            const chestPainTypes = {
+                '0': 'Typical Angina',
+                '1': 'Atypical Angina', 
+                '2': 'Non-Anginal Pain',
+                '3': 'Asymptomatic'
+            };
+            return chestPainTypes[value] || 'Unknown';
+        }
+
+        async function getLifestyleSuggestions() {
+            if (!window.currentRiskData) {
+                alert('No risk analysis data available. Please run the analysis first.');
+                return;
+            }
+
+            const lifestyleBtn = document.querySelector('.lifestyle-btn');
+            const originalText = lifestyleBtn.innerHTML;
+            lifestyleBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting Suggestions...';
+            lifestyleBtn.disabled = true;
+
+            try {
+                // Close the risk analysis panel
+                toggleRiskAnalysisPanel();
+
+                const { formData, prediction } = window.currentRiskData;
+                
+                // Send to the specialized lifestyle suggestions endpoint
+                const response = await fetch('/lifestyle_suggestions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_data: formData,
+                        risk_level: prediction
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.error) {
+                    addMessage(`Error: ${result.error}`, 'ai');
+                } else if (result.suggestions) {
+                    addMessage(result.suggestions, 'ai');
+                    setTimeout(() => {
+                        messagesArea.scrollTop = messagesArea.scrollHeight;
+                    }, 100);
+                } else {
+                    addMessage('I received an empty response. Please try again.', 'ai');
+                }
+
+            } catch (error) {
+                console.error('Error getting lifestyle suggestions:', error);
+                addMessage('Sorry, I encountered an error while generating lifestyle suggestions. Please try again.', 'ai');
+            } finally {
+                lifestyleBtn.innerHTML = originalText;
+                lifestyleBtn.disabled = false;
             }
         }
     </script>
