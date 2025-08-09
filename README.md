@@ -21,6 +21,22 @@ MediSight is an advanced AI medical assistant that provides intelligent health i
 - Sliding articles panel with responsive design
 - Access to peer-reviewed research and publications
 
+### ❤️ Heart Risk Assessment
+- ML-powered cardiovascular risk prediction model
+- Comprehensive health parameter input form
+- Risk assessment based on clinical indicators (age, blood pressure, cholesterol, etc.)
+- Evidence-based risk categorization (High/Low risk)
+
+### 💡 AI-Powered Lifestyle Suggestions
+- Personalized lifestyle recommendations based on risk assessment
+- LLM-generated advice using medical knowledge base
+- Structured recommendations covering:
+  - Diet and nutrition guidance
+  - Physical activity and exercise plans
+  - Risk factor management strategies
+  - Lifestyle modifications
+  - Monitoring and follow-up protocols
+
 ### 🎨 Modern User Interface
 - Clean, professional medical-themed design
 - Responsive layout for desktop and mobile devices
@@ -39,17 +55,15 @@ MediSight is an advanced AI medical assistant that provides intelligent health i
 - **PyMuPDF**: PDF text extraction
 - **Session Management**: In-memory storage for scalability
 - **Europe PMC API**: Medical research integration
+- **Scikit-learn**: Machine learning for risk prediction
+- **Joblib**: Model serialization and loading
+- **Random Forest Classifier**: Heart disease risk assessment model (87% Accuracy)
 
 ### Frontend
 - **HTML5/CSS3**: Modern web standards
 - **JavaScript ES6+**: Interactive functionality
 - **Font Awesome**: Professional icon library
 - **Marked.js**: Markdown rendering for AI responses
-
-### Deployment Ready
-- Session-based file storage (cloud-compatible)
-- No local file dependencies
-- Scalable architecture
 
 ## 📱 Screenshots
 
@@ -62,11 +76,14 @@ MediSight is an advanced AI medical assistant that provides intelligent health i
 ### Articles Search Panel
 *[Screenshot placeholder - Sliding research articles panel]*
 
+### Heart Risk Assessment
+*[Screenshot placeholder - ML-powered cardiovascular risk assessment form]*
+
+### Lifestyle Suggestions
+*[Screenshot placeholder - AI-generated personalized lifestyle recommendations]*
+
 ### Medical Disclaimer
 *[Screenshot placeholder - Professional disclaimer modal]*
-
-### Cardio Risk Assessment (Coming Soon)
-*[Screenshots will be added when feature is implemented]*
 
 ## 🚀 Getting Started
 
@@ -74,6 +91,7 @@ MediSight is an advanced AI medical assistant that provides intelligent health i
 - Python 3.8+
 - Flask
 - Google Gemini API key
+- Scikit-learn 1.6.1 (for model compatibility)
 - Required packages (see requirements.txt)
 
 ### Installation
@@ -113,7 +131,20 @@ python app.py
 2. **Ask Questions**: Type medical questions in the chat interface
 3. **Upload Reports**: Upload PDF medical reports for AI analysis
 4. **Search Articles**: Use the articles panel to find relevant medical research
-5. **Clear Session**: Use the clear button to remove uploaded reports
+5. **Heart Risk Assessment**: Complete the risk assessment form for cardiovascular health evaluation
+6. **Get Lifestyle Suggestions**: Receive personalized recommendations based on your risk profile
+7. **Clear Session**: Use the clear button to remove uploaded reports
+
+### Heart Risk Assessment Guide
+
+1. **Open Risk Panel**: Click the "Heart Risk Analysis" button in the navigation
+2. **Complete Form**: Fill in your health parameters:
+   - Age, sex, and chest pain type
+   - Blood pressure and cholesterol levels
+   - Fasting blood sugar status
+   - Maximum heart rate and exercise angina
+3. **Get Results**: Click "Get Risk Analysis" for ML-powered assessment
+4. **Lifestyle Suggestions**: Click "Get Lifestyle Suggestions" for personalized AI recommendations
 
 ## ⚠️ Important Disclaimer
 
