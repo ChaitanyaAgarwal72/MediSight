@@ -68,22 +68,22 @@ MediSight is an advanced AI medical assistant that provides intelligent health i
 ## 📱 Screenshots
 
 ### Main Interface
-*[Screenshot placeholder - Main chat interface with medical assistant]*
+<img width="1919" height="909" alt="image" src="https://github.com/user-attachments/assets/5a2c8942-3830-4fee-afed-f4d99a81f2c0" />
 
 ### Medical Report Analysis
-*[Screenshot placeholder - PDF upload and analysis feature]*
+<img width="1901" height="873" alt="image" src="https://github.com/user-attachments/assets/d6ced8fb-e1dd-4292-9828-51512fc1972a" />
 
 ### Articles Search Panel
-*[Screenshot placeholder - Sliding research articles panel]*
+<img width="1917" height="906" alt="image" src="https://github.com/user-attachments/assets/e0a46f56-d040-4d8a-8740-70fbc10fa2b7" />
 
 ### Heart Risk Assessment
-*[Screenshot placeholder - ML-powered cardiovascular risk assessment form]*
+<img width="1917" height="903" alt="image" src="https://github.com/user-attachments/assets/6fe2ffb1-1da2-4ae7-be73-ff7588067e02" />
 
 ### Lifestyle Suggestions
-*[Screenshot placeholder - AI-generated personalized lifestyle recommendations]*
+<img width="1919" height="907" alt="image" src="https://github.com/user-attachments/assets/5e3c74ec-1932-45ed-afb1-e894ee6edcce" />
 
 ### Medical Disclaimer
-*[Screenshot placeholder - Professional disclaimer modal]*
+<img width="1919" height="904" alt="image" src="https://github.com/user-attachments/assets/224dc346-b7ab-4322-967e-efd46b9d004e" />
 
 ## 🚀 Getting Started
 
