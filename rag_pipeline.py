@@ -50,6 +50,7 @@ def answer_user_query(user_query: str, report_text: str, index, model, chunks: l
             7. Remind the user to consult a real doctor.
             8. If the user is asking follow-up questions, refer back to previous parts of our conversation.
             9. If the report is not related to medical conditions, inform the user that the report does not contain relevant medical information.
+            10. If the user is asking non-medical questions, inform them that you can only answer medical-related queries.
 
             Now, write your answer:
             """
@@ -78,6 +79,7 @@ def answer_user_query(user_query: str, report_text: str, index, model, chunks: l
             5. Be kind, concise, and helpful.
             6. Remind the user to consult a real doctor.
             7. If the user is asking follow-up questions, refer back to previous parts of our conversation.
+            8. If the user is asking non-medical questions, inform them that you can only answer medical-related queries.
 
             Now, write your answer:
             """
