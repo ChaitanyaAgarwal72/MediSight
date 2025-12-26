@@ -84,7 +84,7 @@ def answer_user_query(user_query: str, report_text: str, index, model, chunks: l
             Now, write your answer:
             """
 
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
     response = model.generate_content(prompt)
     
     return response.text
