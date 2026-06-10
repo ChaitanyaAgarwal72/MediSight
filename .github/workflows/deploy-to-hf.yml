@@ -26,6 +26,9 @@ jobs:
           # Example: git remote add space https://HF_USERNAME:${HF_TOKEN}@huggingface.co/spaces/HF_USERNAME/MediSight
           git remote add space https://genAI71:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/genAI71/Medisight
           
+          # Initialize Git LFS so it respects the .gitattributes file
+          git lfs install
+          
           # We use an orphan branch to push only the current state with LFS, avoiding history issues
           git checkout --orphan hf-deploy
           git add .
