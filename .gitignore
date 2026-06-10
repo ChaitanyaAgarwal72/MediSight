@@ -1,4 +1,4 @@
-.venv
+venv
 __pycache__
 static/uploads/reports/*
 data/*
